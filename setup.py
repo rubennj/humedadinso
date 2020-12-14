@@ -8,18 +8,18 @@ Created on Fri Mar  6 11:30:00 2020
 from setuptools import setup
 
 setup_args = dict(
-    name="humedad-mockups",
+    name="humedadinso",
     version="0.1",
-    url='http://github.com/isi-ies-group/humedad-mockups',
+    url='http://github.com/isi-ies-group/humedadinso',
     author="Ruben",
     author_email="ruben.nunez@upm.es",
-    description="humedad-mockups",
+    description="humedad en modulos insolight",
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: Windows",
     ],
     python_requires='>=3.6',
-    packages=['humedad-mockups'],
+    packages=['humedadinso'],
     zip_safe=False,
     package_data={'': ['*.txt','*.yaml']},
     include_package_data=True,
