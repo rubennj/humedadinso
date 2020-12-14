@@ -29,9 +29,9 @@ install_requires = [
     'pandas',
     'datetime',
     'matplotlib',
-    # 'psychrochart',
-    # 'psychrolib',
-    # 'lectura_equipos',
+    'psychrochart',
+    'psychrolib',
+    'lectura_equipos',
 ]
 
 if __name__ == '__main__':
