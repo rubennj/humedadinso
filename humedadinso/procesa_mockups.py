@@ -13,7 +13,6 @@ from matplotlib.lines import Line2D
 import pandas as pd
 import numpy as np
 
-import psychrolib as psy
 from psychrochart import PsychroChart
 
 # , guarda_ultimo_fichero_sesion
@@ -49,6 +48,17 @@ def ec_pres(v_p):
 
     return v_p*m+C
 
+def ec_hratio(t, hr, p):
+    A = 6.116441 # temo range: -20...+50°C
+    m = 7.591386
+    tn = 240.7263 # Triple point temperature 273.16 K
+    
+    pws = A*10**(m*t/(t+tn)) # hPa
+    pw = pws*(hr/100)
+    
+    B = 621.9907 # g/kg 
+    
+    return B*pw/(p-pw)
 
 def ec_pto_rocio(hr, t):
     return ((hr/100)**(1/8))*(112+0.9*t)+(0.1*t)-112
@@ -230,15 +240,10 @@ def procesa_señales(data):
     data_proces['rocio_mod2'] = ec_pto_rocio(
         hr=data_proces['hr_mod2'], t=data_proces['temp_mod2'])
     
-    pres = 94000  # 101325 hPa
+    pres = 940  # 101325 hPa
     
-    # Set the unit system, for example to SI (can be either psychrolib.SI or psychrolib.IP)
-    psy.SetUnitSystem(psy.SI)
-    
-    data_proces['h_ratio1'] = psy.GetHumRatioFromRelHum(
-        data_proces['temp_mod1'].values, data_proces['hr_mod1'].values/100, pres) * 1000
-    data_proces['h_ratio2'] = psy.GetHumRatioFromRelHum(
-        data_proces['temp_mod2'], data_proces['hr_mod2']/100, pres) * 1000
+    data_proces['h_ratio1'] = ec_hratio(t=data_proces['temp_mod1'], hr=data_proces['hr_mod1']/100, p=pres)
+    data_proces['h_ratio2'] = ec_hratio(t=data_proces['temp_mod2'], hr=data_proces['hr_mod2']/100, p=pres)
     
     # lee estacion
     data_meteo = lee_meteo(data_proces.index.round('T'))
@@ -247,8 +252,7 @@ def procesa_señales(data):
     data_meteo = data_meteo.rename(
         columns={'Temp. Ai 1': 'temp_amb', 'Hum. Rel': 'hr_amb'})
     
-    data_meteo['h_ratio_amb'] = psy.GetHumRatioFromRelHum(
-        data_meteo['temp_amb'], (data_meteo['hr_amb']/100), pres) * 1000
+    data_meteo['h_ratio_amb'] = ec_hratio(t=data_meteo['temp_amb'], hr=(data_meteo['hr_amb']/100), p=pres)
     
     # axz = data_proces[['h_ratio1', 'h_ratio2']].plot();
     # data_meteo['h_ratio_amb'].plot(ax=axz)
