@@ -209,6 +209,10 @@ def procesa_señales(data):
         v_hum=data['CH2:M1-RH'], t=data_proces['temp_mod1'])
     data_proces['hr_mod2'] = ec_hr(
         v_hum=data['CH4:M2-RH'], t=data_proces['temp_mod2'])
+    
+    data_proces.loc[data_proces['hr_mod2'] > 100] = 100
+    data_proces.loc[data_proces['hr_mod2'] < 0] = 0
+    
     data_proces['hr_amb'] = ec_hr(
         v_hum=data['CH6:C-RH'], t=data_proces['temp_amb'])
     
@@ -234,7 +238,7 @@ def procesa_señales(data):
     data_proces['h_ratio1'] = psy.GetHumRatioFromRelHum(
         data_proces['temp_mod1'].values, data_proces['hr_mod1'].values/100, pres) * 1000
     data_proces['h_ratio2'] = psy.GetHumRatioFromRelHum(
-        data_proces['temp_mod2'], data_proces['hr_mod2']/123+0.15, pres) * 1000
+        data_proces['temp_mod2'], data_proces['hr_mod2']/100, pres) * 1000
     
     # lee estacion
     data_meteo = lee_meteo(data_proces.index.round('T'))
